@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  HEB Brand Palette  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <Color x:Key="HEBRed">#CC0000</Color>
+    <Color x:Key="HEBRedDark">#990000</Color>
+    <Color x:Key="HEBRedLight">#FF4444</Color>
+    <Color x:Key="HEBGold">#F5A623</Color>
+    <Color x:Key="HEBGoldLight">#FFD166</Color>
+
+    <!--  Neutrals  -->
+    <Color x:Key="Surface100">#FFFFFF</Color>
+    <Color x:Key="Surface200">#F5F5F5</Color>
+    <Color x:Key="Surface300">#EEEEEE</Color>
+    <Color x:Key="Surface400">#BDBDBD</Color>
+
+    <Color x:Key="OnSurface400">#9E9E9E</Color>
+    <Color x:Key="OnSurface900">#1A1A1A</Color>
+    <Color x:Key="OnSurface700">#424242</Color>
+    <Color x:Key="OnSurface500">#757575</Color>
+    <Color x:Key="OnSurface300">#BDBDBD</Color>
+
+    <!--  Semantic  -->
+    <Color x:Key="SuccessGreen">#2E7D32</Color>
+    <Color x:Key="SuccessLight">#E8F5E9</Color>
+    <Color x:Key="WarningAmber">#F57C00</Color>
+    <Color x:Key="WarningLight">#FFF3E0</Color>
+    <Color x:Key="ErrorRed">#C62828</Color>
+    <Color x:Key="ErrorLight">#FFEBEE</Color>
+    <Color x:Key="InfoBlue">#1565C0</Color>
+    <Color x:Key="InfoLight">#E3F2FD</Color>
+
+    <!--  Dark Mode Overrides  -->
+    <Color x:Key="DarkBackground">#121212</Color>
+    <Color x:Key="DarkSurface">#1E1E1E</Color>
+    <Color x:Key="DarkSurface2">#2C2C2C</Color>
+    <Color x:Key="DarkOnSurface">#E0E0E0</Color>
+
+    <!--  App-level semantic tokens  -->
+    <Color x:Key="Primary">#CC0000</Color>
+    <Color x:Key="PrimaryDark">#990000</Color>
+    <Color x:Key="OnPrimary">#FFFFFF</Color>
+    <Color x:Key="Secondary">#F5A623</Color>
+    <Color x:Key="OnSecondary">#1A1A1A</Color>
+
+    <!--  Gradients  -->
+    <LinearGradientBrush x:Key="HEBRedGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="#CC0000" />
+        <GradientStop Offset="1.0" Color="#990000" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="HEBGoldGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="#F5A623" />
+        <GradientStop Offset="1.0" Color="#E08700" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="DashboardHeaderGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0.0" Color="#CC0000" />
+        <GradientStop Offset="1.0" Color="#880000" />
+    </LinearGradientBrush>
+
+</ResourceDictionary>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HEBRaffle.ViewModels"
+             xmlns:models="clr-namespace:HEBRaffle.Models"
+             x:Class="HEBRaffle.Views.ParticipantsPage"
+             Title="Participants"
+             x:DataType="vm:ParticipantsViewModel"
+             Style="{StaticResource PageBase}">
+
+    <Shell.TitleView>
+        <Grid Padding="0,0,12,0" ColumnDefinitions="*,Auto">
+            <Label Grid.Column="0"
+                   Text="Participants"
+                   TextColor="White"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1"
+                    Padding="8,0"
+                    Text="📊 Export"
+                    Command="{Binding ExportCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="White"
+                    FontSize="13" />
+        </Grid>
+    </Shell.TitleView>
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!--  Search + Sort bar  -->
+        <Grid Grid.Row="0"
+              Padding="12,12,12,4"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="8"
+              BackgroundColor="{StaticResource Surface100}">
+
+            <SearchBar Grid.Column="0"
+                       Placeholder="Search by name or store…"
+                       Text="{Binding SearchQuery}"
+                       Style="{StaticResource SearchEntry}" />
+
+            <Button Grid.Column="1"
+                    Padding="10,0"
+                    Text="{Binding SortLabel}"
+                    Command="{Binding CycleSortCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    FontSize="12"
+                    HeightRequest="44" />
+        </Grid>
+
+        <!--  Count badge  -->
+        <Grid Grid.Row="1"
+              Padding="16,6,16,8"
+              BackgroundColor="{StaticResource Surface100}">
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="{Binding TotalCount}"
+                              FontAttributes="Bold"
+                              TextColor="{StaticResource HEBRed}" />
+                        <Span Text=" participant(s) found"
+                              TextColor="{StaticResource OnSurface500}"
+                              FontSize="13" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </Grid>
+
+        <!--  Empty state  -->
+        <VerticalStackLayout Grid.Row="2"
+                             Padding="40"
+                             IsVisible="{Binding IsEmpty}"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Spacing="12">
+            <Label Text="👥"
+                   FontSize="56"
+                   HorizontalOptions="Center" />
+            <Label Text="No participants yet"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource OnSurface700}"
+                   HorizontalOptions="Center" />
+            <Label Text="Tap Register in the Dashboard to add participants."
+                   TextColor="{StaticResource OnSurface500}"
+                   FontSize="14"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+        <!--  Participants list  -->
+        <RefreshView Grid.Row="2"
+                     IsRefreshing="{Binding IsBusy}"
+                     Command="{Binding LoadCommand}"
+                     IsVisible="{Binding IsEmpty, Converter={StaticResource InvertBool}}">
+
+            <CollectionView ItemsSource="{Binding Participants}"
+                            SelectionMode="None"
+                            RemainingItemsThreshold="5">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Participant">
+
+                        <SwipeView Margin="12,4">
+
+                            <!--  Swipe Left: Edit  -->
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Reveal">
+                                    <SwipeItem Text="Edit"
+                                               IconImageSource="icon_edit.png"
+                                               BackgroundColor="{StaticResource InfoBlue}"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ParticipantsViewModel}}, Path=EditParticipantCommand}"
+                                               CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+
+                            <!--  Swipe Right: Delete  -->
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Reveal">
+                                    <SwipeItem Text="Delete"
+                                               IconImageSource="icon_trash.png"
+                                               BackgroundColor="{StaticResource ErrorRed}"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ParticipantsViewModel}}, Path=DeleteParticipantCommand}"
+                                               CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <!--  Row content  -->
+                            <Border Style="{StaticResource ParticipantRow}">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+
+                                    <!--  Avatar circle  -->
+                                    <Border Grid.Column="0"
+                                            WidthRequest="46"
+                                            HeightRequest="46"
+                                            StrokeThickness="0"
+                                            StrokeShape="Ellipse">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding IsWinner, Converter={StaticResource WinnerColorConverter}}" />
+                                        </Border.Background>
+                                        <Label Text="{Binding Initial}"
+                                               FontSize="20"
+                                               FontAttributes="Bold"
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Border>
+
+                                    <!--  Info  -->
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="2"
+                                                         VerticalOptions="Center">
+                                        <Label Text="{Binding FullName}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource OnSurface900}" />
+                                        <Label Text="{Binding Store}"
+                                               FontSize="13"
+                                               TextColor="{StaticResource OnSurface500}" />
+                                        <Label Text="{Binding YearsLabel}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource OnSurface400}" />
+                                    </VerticalStackLayout>
+
+                                    <!--  Winner badge  -->
+                                    <Border Grid.Column="2"
+                                            Padding="8,4"
+                                            IsVisible="{Binding IsWinner}"
+                                            BackgroundColor="{StaticResource SuccessLight}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 6"
+                                            VerticalOptions="Center">
+                                        <Label Text="🏆 Winner"
+                                               FontSize="11"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource SuccessGreen}" />
+                                    </Border>
+
+                                </Grid>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.Footer>
+                    <BoxView HeightRequest="20" Color="Transparent" />
+                </CollectionView.Footer>
+
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

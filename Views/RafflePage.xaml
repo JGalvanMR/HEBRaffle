@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HEBRaffle.ViewModels"
+             xmlns:models="clr-namespace:HEBRaffle.Models"
+             x:Class="HEBRaffle.Views.RafflePage"
+             Title="Raffle Draw"
+             x:DataType="vm:RaffleViewModel"
+             Style="{StaticResource PageBase}">
+
+    <Shell.TitleView>
+        <Grid Padding="0,0,4,0" ColumnDefinitions="*,Auto,Auto">
+            <Label Grid.Column="0"
+                   Text="🎲  Raffle Draw"
+                   TextColor="White"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1"
+                    Padding="8,0"
+                    Text="Winners"
+                    Command="{Binding ViewWinnersCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="White"
+                    FontSize="13" />
+            <Button Grid.Column="2"
+                    Padding="8,0"
+                    Text="⬇ Export"
+                    Command="{Binding ExportWinnersCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="White"
+                    FontSize="13" />
+        </Grid>
+    </Shell.TitleView>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
+
+            <!--  ── Stage: Animation area ────────────────────────────────  -->
+            <Grid Padding="24,40,24,40"
+                  Background="{StaticResource DashboardHeaderGradient}"
+                  MinimumHeightRequest="260">
+
+                <VerticalStackLayout Spacing="16" VerticalOptions="Center">
+
+                    <!--  Status label  -->
+                    <Label Text="{Binding StatusMessage}"
+                           FontSize="13"
+                           TextColor="#CCFFFFFF"
+                           HorizontalOptions="Center" />
+
+                    <!--  Animated name drum roll  -->
+                    <Border x:Name="AnimationBorder"
+                            Padding="24,20"
+                            BackgroundColor="#22FFFFFF"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 20"
+                            HorizontalOptions="Fill">
+                        <Label Text="{Binding AnimatedName}"
+                               FontSize="30"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               LineBreakMode="WordWrap" />
+                    </Border>
+
+                    <!--  Winner reveal panel  -->
+                    <Border Padding="20,16"
+                            IsVisible="{Binding ShowResult}"
+                            BackgroundColor="{StaticResource HEBGold}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 16"
+                            HorizontalOptions="Fill">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding ResultPrize, StringFormat='🏆  Prize #{0}'}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnSurface900}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="{Binding ResultName}"
+                                   FontSize="26"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnSurface900}"
+                                   HorizontalOptions="Center"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="{Binding ResultStore}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource OnSurface700}"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  Spinner during draw  -->
+                    <ActivityIndicator IsRunning="{Binding IsAnimating}"
+                                       IsVisible="{Binding IsAnimating}"
+                                       HeightRequest="28"
+                                       Color="White" />
+
+                </VerticalStackLayout>
+            </Grid>
+
+            <!--  ── Controls ─────────────────────────────────────────────  -->
+            <VerticalStackLayout Padding="20,24" Spacing="20">
+
+                <!--  Number of winners picker  -->
+                <Border Style="{StaticResource Card}">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="16">
+
+                        <Label Grid.Row="0"
+                               Text="NUMBER OF WINNERS"
+                               Style="{StaticResource SectionHeader}" />
+
+                        <Grid Grid.Row="1"
+                              ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="16"
+                              VerticalOptions="Center">
+
+                            <Button Grid.Column="0"
+                                    Text="−"
+                                    Command="{Binding DecrementWinnersCommand}"
+                                    WidthRequest="52"
+                                    HeightRequest="52"
+                                    FontSize="24"
+                                    FontAttributes="Bold"
+                                    CornerRadius="26"
+                                    BackgroundColor="{StaticResource Surface200}"
+                                    TextColor="{StaticResource OnSurface900}" />
+
+                            <VerticalStackLayout Grid.Column="1"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+                                <Label Text="{Binding NumberOfWinners}"
+                                       FontSize="48"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource HEBRed}"
+                                       HorizontalOptions="Center" />
+                                <Label Text="{Binding EligibleCount, StringFormat='of {0} eligible'}"
+                                       Style="{StaticResource CaptionText}"
+                                       HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="2"
+                                    Text="+"
+                                    Command="{Binding IncrementWinnersCommand}"
+                                    WidthRequest="52"
+                                    HeightRequest="52"
+                                    FontSize="24"
+                                    FontAttributes="Bold"
+                                    CornerRadius="26"
+                                    BackgroundColor="{StaticResource Surface200}"
+                                    TextColor="{StaticResource OnSurface900}" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!--  Draw Button  -->
+                <Button Text="🎲  START DRAW"
+                        Command="{Binding DrawCommand}"
+                        IsEnabled="{Binding CanDraw}"
+                        Style="{StaticResource PrimaryButton}"
+                        FontSize="18"
+                        HeightRequest="60" />
+
+                <!--  Session winners summary  -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding SessionWinners.Count, Converter={StaticResource IntToColor}, ConverterParameter='visible'}">
+                    <VerticalStackLayout Spacing="12">
+
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="SESSION WINNERS"
+                                   Style="{StaticResource SectionHeader}" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding SessionWinners.Count, StringFormat='{0} total'}"
+                                   Style="{StaticResource CaptionText}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+
+                        <CollectionView ItemsSource="{Binding SessionWinners}"
+                                        HeightRequest="220"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Winner">
+                                    <Grid Padding="0,6"
+                                          ColumnDefinitions="Auto,*,Auto"
+                                          ColumnSpacing="12">
+
+                                        <!--  Prize number badge  -->
+                                        <Border Grid.Column="0"
+                                                WidthRequest="36"
+                                                HeightRequest="36"
+                                                BackgroundColor="{StaticResource HEBGold}"
+                                                StrokeThickness="0"
+                                                StrokeShape="Ellipse">
+                                            <Label Text="{Binding PrizeNumber}"
+                                                   FontSize="13"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource OnSurface900}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1"
+                                                             Spacing="1"
+                                                             VerticalOptions="Center">
+                                            <Label Text="{Binding Participant.FullName}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource OnSurface900}" />
+                                            <Label Text="{Binding Participant.Store}"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource OnSurface500}" />
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="2"
+                                               Text="🏆"
+                                               FontSize="18"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!--  Reset button  -->
+                <Button Text="⚠  Reset Raffle"
+                        Command="{Binding ResetRaffleCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        TextColor="{StaticResource ErrorRed}"
+                        BorderColor="{StaticResource ErrorRed}" />
+
+                <BoxView HeightRequest="20" Color="Transparent" />
+
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

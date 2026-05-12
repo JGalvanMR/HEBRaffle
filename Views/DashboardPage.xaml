@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HEBRaffle.ViewModels"
+             x:Class="HEBRaffle.Views.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageBase}">
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="0">
+
+            <!--  ── Header ────────────────────────────────────────────────  -->
+            <Grid Grid.Row="0"
+                  Padding="24,52,24,32"
+                  Background="{StaticResource DashboardHeaderGradient}">
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+
+                    <!--  HEB Logo placeholder / Event badge  -->
+                    <Border Grid.Row="0"
+                            Padding="10,4"
+                            BackgroundColor="#FFFFFF22"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 8"
+                            HorizontalOptions="Start">
+                        <Label Text="🛒  HEB Corporate Event"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               CharacterSpacing="0.8" />
+                    </Border>
+
+                    <Label Grid.Row="1"
+                           Text="Raffle Manager"
+                           FontSize="34"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+
+                    <Label Grid.Row="2"
+                           Text="{Binding EventStatus}"
+                           FontSize="14"
+                           TextColor="#CCFFFFFF" />
+                </Grid>
+            </Grid>
+
+            <!--  ── Stat Cards ─────────────────────────────────────────────  -->
+            <Grid Grid.Row="1"
+                  Padding="16,20,16,0"
+                  ColumnDefinitions="*,*,*"
+                  ColumnSpacing="12">
+
+                <!--  Total  -->
+                <Border Grid.Column="0" Style="{StaticResource StatCard}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="👥"
+                               FontSize="24"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalParticipants}"
+                               FontSize="30"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource HEBRed}"
+                               HorizontalOptions="Center" />
+                        <Label Text="Total"
+                               Style="{StaticResource CaptionText}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!--  Eligible  -->
+                <Border Grid.Column="1" Style="{StaticResource StatCard}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="✅"
+                               FontSize="24"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding EligibleParticipants}"
+                               FontSize="30"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource SuccessGreen}"
+                               HorizontalOptions="Center" />
+                        <Label Text="Eligible"
+                               Style="{StaticResource CaptionText}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!--  Winners  -->
+                <Border Grid.Column="2" Style="{StaticResource StatCard}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="🏆"
+                               FontSize="24"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalWinners}"
+                               FontSize="30"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource HEBGold}"
+                               HorizontalOptions="Center" />
+                        <Label Text="Winners"
+                               Style="{StaticResource CaptionText}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!--  ── Action Grid ─────────────────────────────────────────────  -->
+            <Grid Grid.Row="2"
+                  Padding="16,24,16,32"
+                  RowDefinitions="Auto,Auto"
+                  ColumnDefinitions="*,*"
+                  RowSpacing="16"
+                  ColumnSpacing="16">
+
+                <!--  Register  -->
+                <Border Grid.Row="0"
+                        Grid.Column="0"
+                        Padding="0"
+                        Style="{StaticResource Card}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToRegisterCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+                        <BoxView Grid.Row="0"
+                                 HeightRequest="6"
+                                 CornerRadius="16,16,0,0"
+                                 Color="{StaticResource HEBRed}" />
+                        <VerticalStackLayout Grid.Row="1"
+                                             Padding="20,16"
+                                             Spacing="8">
+                            <Label Text="📝" FontSize="32" />
+                            <Label Text="Register"
+                                   FontSize="17"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnSurface900}" />
+                            <Label Text="Add new participant" Style="{StaticResource CaptionText}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!--  Participants  -->
+                <Border Grid.Row="0"
+                        Grid.Column="1"
+                        Padding="0"
+                        Style="{StaticResource Card}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToParticipantsCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+                        <BoxView Grid.Row="0"
+                                 HeightRequest="6"
+                                 CornerRadius="16,16,0,0"
+                                 Color="{StaticResource InfoBlue}" />
+                        <VerticalStackLayout Grid.Row="1"
+                                             Padding="20,16"
+                                             Spacing="8">
+                            <Label Text="👥" FontSize="32" />
+                            <Label Text="Participants"
+                                   FontSize="17"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnSurface900}" />
+                            <Label Text="View &amp; manage list" Style="{StaticResource CaptionText}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!--  Raffle  -->
+                <Border Grid.Row="1"
+                        Grid.Column="0"
+                        Padding="0"
+                        Style="{StaticResource Card}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToRaffleCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+                        <BoxView Grid.Row="0"
+                                 HeightRequest="6"
+                                 CornerRadius="16,16,0,0"
+                                 Color="{StaticResource HEBGold}" />
+                        <VerticalStackLayout Grid.Row="1"
+                                             Padding="20,16"
+                                             Spacing="8">
+                            <Label Text="🎲" FontSize="32" />
+                            <Label Text="Raffle"
+                                   FontSize="17"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnSurface900}" />
+                            <Label Text="Run the draw" Style="{StaticResource CaptionText}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!--  Winners  -->
+                <Border Grid.Row="1"
+                        Grid.Column="1"
+                        Padding="0"
+                        Style="{StaticResource Card}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToWinnersCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+                        <BoxView Grid.Row="0"
+                                 HeightRequest="6"
+                                 CornerRadius="16,16,0,0"
+                                 Color="{StaticResource SuccessGreen}" />
+                        <VerticalStackLayout Grid.Row="1"
+                                             Padding="20,16"
+                                             Spacing="8">
+                            <Label Text="🏆" FontSize="32" />
+                            <Label Text="Winners"
+                                   FontSize="17"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnSurface900}" />
+                            <Label Text="View all winners" Style="{StaticResource CaptionText}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+            </Grid>
+
+        </Grid>
+    </ScrollView>
+
+    <!--  Loading overlay  -->
+    <ContentPage.Triggers>
+        <DataTrigger TargetType="ContentPage"
+                     Binding="{Binding IsBusy}"
+                     Value="True">
+            <Setter Property="IsEnabled" Value="False" />
+        </DataTrigger>
+    </ContentPage.Triggers>
+
+</ContentPage>

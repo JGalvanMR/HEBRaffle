@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:HEBRaffle.Views"
+       x:Class="HEBRaffle.AppShell"
+       Shell.FlyoutBehavior="Disabled">
+
+    <TabBar>
+
+        <!--  Dashboard  -->
+        <ShellContent Title="Dashboard"
+                      Icon="icon_dashboard.png"
+                      Route="DashboardPage"
+                      ContentTemplate="{DataTemplate views:DashboardPage}" />
+
+        <!--  Participants  -->
+        <ShellContent Title="Participants"
+                      Icon="icon_people.png"
+                      Route="ParticipantsPage"
+                      ContentTemplate="{DataTemplate views:ParticipantsPage}" />
+
+        <!--  Raffle  -->
+        <ShellContent Title="Raffle"
+                      Icon="icon_star.png"
+                      Route="RafflePage"
+                      ContentTemplate="{DataTemplate views:RafflePage}" />
+
+        <!--  Winners  -->
+        <ShellContent Title="Winners"
+                      Icon="icon_trophy.png"
+                      Route="WinnersPage"
+                      ContentTemplate="{DataTemplate views:WinnersPage}" />
+
+    </TabBar>
+
+</Shell>

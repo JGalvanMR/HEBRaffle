@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HEBRaffle.Views.RegisterParticipantPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:HEBRaffle.ViewModels"
+    x:DataType="vm:RegisterParticipantViewModel"
+    Title="{Binding Title}"
+    Style="{StaticResource PageBase}">
+
+    <!-- Success Toast (overlay) -->
+    <ContentPage.Triggers>
+        <DataTrigger TargetType="ContentPage"
+                     Binding="{Binding ShowSuccess}" Value="True">
+            <Setter Property="IsEnabled" Value="False" />
+        </DataTrigger>
+    </ContentPage.Triggers>
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Spacing="0" Padding="0,0,0,40">
+
+                <!-- Header stripe -->
+                <BoxView HeightRequest="4" Color="{StaticResource HEBRed}" />
+
+                <VerticalStackLayout Padding="24,24" Spacing="24">
+
+                    <!-- Form Card -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="20">
+
+                            <Label Text="Participant Information"
+                                   Style="{StaticResource SectionHeader}" />
+
+                            <!-- First Name -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="First Name *" Style="{StaticResource BodyText}" FontAttributes="Bold" />
+                                <Border StrokeThickness="1.5"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="4,0">
+                                    <Border.Stroke>
+                                        <Binding Path="FirstNameError"
+                                                 Converter="{StaticResource StringNotEmpty}"
+                                                 ConverterParameter="Binding">
+                                            <Binding.FallbackValue>
+                                                <SolidColorBrush Color="{StaticResource Surface300}" />
+                                            </Binding.FallbackValue>
+                                        </Binding>
+                                    </Border.Stroke>
+                                    <Entry
+                                        Text="{Binding FirstName}"
+                                        Placeholder="Enter first name"
+                                        Style="{StaticResource FormEntry}"
+                                        ReturnType="Next"
+                                        x:Name="EntryFirstName" />
+                                </Border>
+                                <Label Text="{Binding FirstNameError}"
+                                       TextColor="{StaticResource ErrorRed}"
+                                       FontSize="12"
+                                       IsVisible="{Binding FirstNameError, Converter={StaticResource StringNotEmpty}}" />
+                            </VerticalStackLayout>
+
+                            <!-- Last Name -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Last Name *" Style="{StaticResource BodyText}" FontAttributes="Bold" />
+                                <Border StrokeThickness="1.5"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="{StaticResource Surface300}"
+                                        Padding="4,0">
+                                    <Entry
+                                        Text="{Binding LastName}"
+                                        Placeholder="Enter last name"
+                                        Style="{StaticResource FormEntry}"
+                                        ReturnType="Next" />
+                                </Border>
+                                <Label Text="{Binding LastNameError}"
+                                       TextColor="{StaticResource ErrorRed}"
+                                       FontSize="12"
+                                       IsVisible="{Binding LastNameError, Converter={StaticResource StringNotEmpty}}" />
+                            </VerticalStackLayout>
+
+                            <!-- Store -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Store *" Style="{StaticResource BodyText}" FontAttributes="Bold" />
+                                <Border StrokeThickness="1.5"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="{StaticResource Surface300}"
+                                        Padding="4,0">
+                                    <Entry
+                                        Text="{Binding Store}"
+                                        Placeholder="e.g. HEB #045 Austin"
+                                        Style="{StaticResource FormEntry}"
+                                        ReturnType="Next" />
+                                </Border>
+                                <Label Text="{Binding StoreError}"
+                                       TextColor="{StaticResource ErrorRed}"
+                                       FontSize="12"
+                                       IsVisible="{Binding StoreError, Converter={StaticResource StringNotEmpty}}" />
+                            </VerticalStackLayout>
+
+                            <!-- Years in Company -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Years in the Company *" Style="{StaticResource BodyText}" FontAttributes="Bold" />
+                                <Border StrokeThickness="1.5"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="{StaticResource Surface300}"
+                                        Padding="4,0">
+                                    <Entry
+                                        Text="{Binding YearsInCompanyText}"
+                                        Placeholder="e.g. 7"
+                                        Keyboard="Numeric"
+                                        Style="{StaticResource FormEntry}"
+                                        ReturnType="Done" />
+                                </Border>
+                                <Label Text="{Binding YearsError}"
+                                       TextColor="{StaticResource ErrorRed}"
+                                       FontSize="12"
+                                       IsVisible="{Binding YearsError, Converter={StaticResource StringNotEmpty}}" />
+                            </VerticalStackLayout>
+
+                            <!-- Error Banner -->
+                            <Border BackgroundColor="{StaticResource ErrorLight}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    Padding="14,10"
+                                    IsVisible="{Binding HasError}">
+                                <Label Text="{Binding ErrorMessage}"
+                                       TextColor="{StaticResource ErrorRed}"
+                                       FontSize="14" />
+                            </Border>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Action Buttons -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Button Grid.Column="0"
+                                Text="Clear Form"
+                                Command="{Binding ClearFormCommand}"
+                                Style="{StaticResource SecondaryButton}" />
+
+                        <Button Grid.Column="1"
+                                Text="{Binding IsEditMode, Converter={StaticResource InvertBool}, ConverterParameter='Save Changes|Register'}"
+                                Command="{Binding SaveCommand}"
+                                IsEnabled="{Binding IsNotBusy}"
+                                Style="{StaticResource PrimaryButton}" />
+                    </Grid>
+
+                    <!-- Busy Indicator -->
+                    <ActivityIndicator
+                        IsRunning="{Binding IsBusy}"
+                        IsVisible="{Binding IsBusy}"
+                        Color="{StaticResource HEBRed}"
+                        HeightRequest="40" />
+
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ── Success Toast ──────────────────────────────────────────────── -->
+        <Border
+            IsVisible="{Binding ShowSuccess}"
+            BackgroundColor="{StaticResource SuccessGreen}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 14"
+            Padding="20,14"
+            Margin="24,0,24,40"
+            VerticalOptions="End"
+            HorizontalOptions="Fill"
+            ZIndex="100">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,4" Radius="12" Opacity="0.2" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Label Grid.Column="0" Text="✅" FontSize="20" VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Text="{Binding SuccessMessage}"
+                       TextColor="White"
+                       FontSize="15"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+
+</ContentPage>

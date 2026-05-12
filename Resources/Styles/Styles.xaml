@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>                     |
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  Converters (global registration)  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <converters:BoolToColorConverter xmlns:converters="clr-namespace:HEBRaffle.Converters"
+                                     x:Key="WinnerColorConverter"
+                                     TrueColor="#2E7D32"
+                                     FalseColor="Transparent" />
+
+    <converters:InvertBoolConverter xmlns:converters="clr-namespace:HEBRaffle.Converters" x:Key="InvertBool" />
+
+    <converters:StringNotEmptyConverter xmlns:converters="clr-namespace:HEBRaffle.Converters" x:Key="StringNotEmpty" />
+
+    <converters:IntToColorConverter xmlns:converters="clr-namespace:HEBRaffle.Converters" x:Key="IntToColor" />
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  Typography  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <Style x:Key="DisplayTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="32" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface900}" />
+    </Style>
+
+    <Style x:Key="PageTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface900}" />
+    </Style>
+
+    <Style x:Key="SectionHeader" TargetType="Label">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface500}" />
+        <Setter Property="CharacterSpacing" Value="1.2" />
+        <Setter Property="TextTransform" Value="Uppercase" />
+    </Style>
+
+    <Style x:Key="BodyText" TargetType="Label">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface700}" />
+    </Style>
+
+    <Style x:Key="CaptionText" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface500}" />
+    </Style>
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  Buttons  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <!--  Primary (HEB Red)  -->
+    <Style x:Key="PrimaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource HEBRed}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="MinimumWidthRequest" Value="140" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="{StaticResource HEBRed}"
+                        Radius="8"
+                        Opacity="0.35"
+                        Offset="0,4" />
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger TargetType="Button" Property="IsEnabled" Value="False">
+                <Setter Property="BackgroundColor" Value="{StaticResource Surface400}" />
+                <Setter Property="Shadow" Value="{x:Null}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Secondary (outlined)  -->
+    <Style x:Key="SecondaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource HEBRed}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="BorderColor" Value="{StaticResource HEBRed}" />
+        <Setter Property="BorderWidth" Value="2" />
+    </Style>
+
+    <!--  Gold / accent  -->
+    <Style x:Key="GoldButton" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource HEBGoldGradient}" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface900}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="Padding" Value="20,0" />
+    </Style>
+
+    <!--  Danger (delete)  -->
+    <Style x:Key="DangerButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource ErrorRed}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="Padding" Value="14,0" />
+    </Style>
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  Entries / Fields  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <Style x:Key="FormEntry" TargetType="Entry">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface900}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource OnSurface300}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface200}" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="Margin" Value="0,2" />
+    </Style>
+
+    <Style x:Key="SearchEntry" TargetType="SearchBar">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="TextColor" Value="{StaticResource OnSurface900}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource OnSurface300}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface200}" />
+    </Style>
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  Cards  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface100}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="16" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="Black"
+                        Radius="12"
+                        Opacity="0.08"
+                        Offset="0,2" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="StatCard"
+           TargetType="Border"
+           BasedOn="{StaticResource Card}">
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  Page shell  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <Style x:Key="PageBase" TargetType="ContentPage">
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface200}" />
+    </Style>
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  List Items  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <Style x:Key="ParticipantRow" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface100}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="12" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="Margin" Value="16,4" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="Black"
+                        Radius="6"
+                        Opacity="0.06"
+                        Offset="0,1" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+    <!--  Shell / Navigation Bar  -->
+    <!--  ═══════════════════════════════════════════════════════════════════  -->
+
+    <Style TargetType="Shell" ApplyToDerivedTypes="True">
+        <Setter Property="Shell.BackgroundColor" Value="{StaticResource HEBRed}" />
+        <Setter Property="Shell.ForegroundColor" Value="White" />
+        <Setter Property="Shell.TitleColor" Value="White" />
+        <Setter Property="Shell.DisabledColor" Value="#B2FFFFFF" />
+        <Setter Property="Shell.UnselectedColor" Value="#B2FFFFFF" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="White" />
+        <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource HEBRed}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource OnSurface400}" />
+        <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource HEBRed}" />
+    </Style>
+
+</ResourceDictionary>
