@@ -33,12 +33,15 @@ public sealed class AppDatabase : IAsyncDisposable
             if (_initialized) return;
 
             _db = new SQLiteAsyncConnection(
-                DatabasePath,
-                SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
+    DatabasePath,
+    SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.FullMutex);
 
             // Enable WAL mode for better concurrency
-            await _db.ExecuteAsync("PRAGMA journal_mode=WAL;");
-            await _db.ExecuteAsync("PRAGMA foreign_keys=ON;");
+			try { await _db.ExecuteAsync("PRAGMA journal_mode=WAL;"); } 
+        catch (Exception ex) { Debug.WriteLine($"WAL pragma failed: {ex.Message}"); }
+            try { await _db.ExecuteAsync("PRAGMA foreign_keys=ON;"); } 
+        catch (Exception ex) { Debug.WriteLine($"FK pragma failed: {ex.Message}"); }
+
             await _db.ExecuteAsync("PRAGMA synchronous=NORMAL;");
 
             // Create tables
@@ -83,10 +86,12 @@ public sealed class AppDatabase : IAsyncDisposable
           .Where(p => !p.IsWinner)
           .ToListAsync();
 
-    public Task<Participant?> GetParticipantByIdAsync(int id) =>
-        Db.Table<Participant>()
-          .Where(p => p.Id == id)
-          .FirstOrDefaultAsync();
+public async Task<Participant?> GetParticipantByIdAsync(int id)
+{
+    return await Db.Table<Participant>()
+                   .Where(p => p.Id == id)
+                   .FirstOrDefaultAsync();
+}
 
     public async Task<bool> ExistsDuplicateAsync(string firstName, string lastName, string store, int excludeId = 0)
     {

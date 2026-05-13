@@ -18,24 +18,22 @@ public partial class App : Application
     }
 
     protected override async void OnStart()
+{
+    base.OnStart();
+    try
     {
-        base.OnStart();
-
-        try
-        {
-            await _db.InitializeAsync();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[App] DB init failed: {ex.Message}");
-
-            if (Windows.Count > 0 && Windows[0].Page != null)
-            {
-                await Windows[0].Page.DisplayAlert(
-                    "Startup Error",
-                    "Failed to initialize the database. Please restart the app.",
-                    "OK");
-            }
-        }
+        await _db.InitializeAsync();
     }
+    catch (Exception ex)
+    {
+        System.Diagnostics.Debug.WriteLine($"[DB ERROR] {ex.GetType().Name}: {ex.Message}");
+        System.Diagnostics.Debug.WriteLine($"[DB PATH] {Data.AppDatabase.DatabasePath}");
+        System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+
+        await (Windows[0].Page?.DisplayAlert(
+            "Startup Error",
+            $"DB Error: {ex.Message}",
+            "OK") ?? Task.CompletedTask);
+    }
+}
 }

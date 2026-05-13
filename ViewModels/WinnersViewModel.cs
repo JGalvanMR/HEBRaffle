@@ -56,7 +56,7 @@ public sealed partial class WinnersViewModel : BaseViewModel
             ExportMessage   = $"Saved: {Path.GetFileName(path)}";
             ShowExportToast = true;
 
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 await Task.Delay(3000);
                 MainThread.BeginInvokeOnMainThread(() => ShowExportToast = false);
