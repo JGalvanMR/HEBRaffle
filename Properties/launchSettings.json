@@ -1,10 +1,14 @@
 {
   "profiles": {
     "Windows Machine": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "workingDirectory": "C:\\GitHub\\HEBRaffle"
     },
     "MsixPackage": {
       "commandName": "MsixPackage"
+    },
+    "Perfil 1": {
+      "commandName": "Project"
     }
   }
 }
