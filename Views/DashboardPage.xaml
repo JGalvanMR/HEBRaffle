@@ -104,7 +104,7 @@
             <!--  ── Action Grid ─────────────────────────────────────────────  -->
             <Grid Grid.Row="2"
                   Padding="16,24,16,32"
-                  RowDefinitions="Auto,Auto"
+                  RowDefinitions="Auto,Auto,Auto"
                   ColumnDefinitions="*,*"
                   RowSpacing="16"
                   ColumnSpacing="16">
@@ -213,7 +213,35 @@
                     </Grid>
                 </Border>
 
-            </Grid>
+            <!-- Import — full width, Row 2 -->
+<Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+        Style="{StaticResource Card}"
+        Padding="0">
+    <Border.GestureRecognizers>
+        <TapGestureRecognizer Command="{Binding NavigateToImportCommand}" />
+    </Border.GestureRecognizers>
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+        <BoxView Grid.Row="0"
+                 HeightRequest="6"
+                 CornerRadius="16,16,0,0"
+                 Color="#7B1FA2" />
+        <Grid Grid.Row="1"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="16"
+              Padding="20,16">
+            <Label Grid.Column="0" Text="📂" FontSize="32" VerticalOptions="Center" />
+            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                <Label Text="Import from Excel"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource OnSurface900}" />
+                <Label Text="Load participants from .xlsx file"
+                       Style="{StaticResource CaptionText}" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</Border>
+			</Grid>
 
         </Grid>
     </ScrollView>

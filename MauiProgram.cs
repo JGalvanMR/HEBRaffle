@@ -50,6 +50,10 @@ public static class MauiProgram
         builder.Services.AddTransient<ParticipantsPage>();
         builder.Services.AddSingleton<RafflePage>();
         builder.Services.AddTransient<WinnersPage>();
+		
+		builder.Services.AddSingleton<IImportService, ImportService>();
+builder.Services.AddTransient<ImportViewModel>();
+builder.Services.AddTransient<ImportPage>();
 
         return builder.Build();
     }

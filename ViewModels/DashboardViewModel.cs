@@ -54,4 +54,7 @@ public sealed partial class DashboardViewModel : BaseViewModel
 
     [RelayCommand]
     private Task NavigateToWinnersAsync() => _nav.NavigateToWinnersAsync();
+	
+	[RelayCommand]
+	private Task NavigateToImportAsync() => _nav.NavigateToImportAsync();
 }

@@ -10,5 +10,6 @@ public partial class AppShell : Shell
 
         // Register modal/push routes (not in TabBar)
         Routing.RegisterRoute("RegisterParticipantPage", typeof(RegisterParticipantPage));
+		Routing.RegisterRoute("ImportPage", typeof(ImportPage));
     }
 }

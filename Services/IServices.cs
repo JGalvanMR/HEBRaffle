@@ -74,4 +74,5 @@ public interface INavigationService
     Task NavigateToParticipantsAsync();
     Task NavigateToRaffleAsync();
     Task NavigateToWinnersAsync();
+	Task NavigateToImportAsync();
 }

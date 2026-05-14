@@ -20,6 +20,9 @@ public class Participant
     [NotNull]
     public int YearsInCompany { get; set; }
 
+    [MaxLength(200)]
+    public string Email { get; set; } = string.Empty;
+
     public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
     public bool IsWinner { get; set; } = false;
@@ -36,7 +39,6 @@ public class Participant
     public string YearsLabel =>
         YearsInCompany == 1 ? "1 year" : $"{YearsInCompany} years";
 
-    // Nueva propiedad para el Avatar/Inicial
     [Ignore]
     public string Initial => !string.IsNullOrWhiteSpace(FirstName)
                              ? FirstName[0].ToString().ToUpper()

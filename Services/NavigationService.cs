@@ -26,4 +26,7 @@ public sealed class NavigationService : INavigationService
 
     public Task NavigateToWinnersAsync() =>
         GoToAsync("//WinnersPage");
+		
+	public Task NavigateToImportAsync() =>
+		GoToAsync("ImportPage");
 }
