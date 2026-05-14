@@ -8,6 +8,7 @@ public sealed partial class ImportViewModel : BaseViewModel
 {
     private readonly IImportService    _import;
     private readonly INavigationService _nav;
+	public bool CanImport => HasFile && !IsBusy;
 
     // ─── State ───────────────────────────────────────────────────────────────
     [ObservableProperty] private string  _selectedFileName  = "No file selected";
@@ -92,10 +93,19 @@ public sealed partial class ImportViewModel : BaseViewModel
         }, "Import failed");
     }
 
+partial void OnIsBusyChanged(bool value)
+{
+    ImportCommand.NotifyCanExecuteChanged();
+    OnPropertyChanged(nameof(CanImport));
+}
+
     private bool CanImport() => HasFile && !IsBusy;
 
-    partial void OnHasFileChanged(bool value) =>
-        ImportCommand.NotifyCanExecuteChanged();
+    partial void OnHasFileChanged(bool value)
+{
+    ImportCommand.NotifyCanExecuteChanged();
+    OnPropertyChanged(nameof(CanImport));
+}
 
     // ─── Navigation ──────────────────────────────────────────────────────────
 
