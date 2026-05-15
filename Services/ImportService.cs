@@ -11,9 +11,9 @@ namespace HEBRaffle.Services;
 
 public sealed class ImportResult
 {
-    public int Imported   { get; init; }
-    public int Skipped    { get; init; }   // duplicados
-    public int Errors     { get; init; }
+    public int Imported  { get; init; }
+    public int Skipped   { get; init; }
+    public int Errors    { get; init; }
     public List<string> ErrorDetails { get; init; } = [];
 
     public string Summary =>
@@ -26,17 +26,17 @@ public sealed class ImportResult
 
 public interface IImportService
 {
-    /// <summary>
-    /// Importa participantes desde un archivo Excel (.xlsx).
-    /// Detecta automáticamente las columnas del archivo HEB.
-    /// </summary>
+    /// <summary>Importa participantes desde un archivo Excel.</summary>
     Task<ImportResult> ImportFromExcelAsync(string filePath, CancellationToken ct = default);
 
-    /// <summary>
-    /// Permite al usuario seleccionar un archivo .xlsx desde el dispositivo.
-    /// Retorna null si cancela.
-    /// </summary>
+    /// <summary>Abre el file picker para seleccionar un .xlsx.</summary>
     Task<string?> PickExcelFileAsync();
+
+    /// <summary>
+    /// Genera el template Excel con encabezados y filas de ejemplo,
+    /// lo guarda en temp y retorna la ruta para compartirlo.
+    /// </summary>
+    Task<string> GenerateTemplateAsync();
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -48,16 +48,90 @@ public sealed class ImportService : IImportService
     private readonly IDatabaseService       _db;
     private readonly ILogger<ImportService> _logger;
 
-    // Nombres de columna aceptados (case-insensitive, sin acentos)
-    private static readonly string[] NameCols    = ["nombre", "nombre completo", "name", "full name", "nombre_completo"];
-    private static readonly string[] YearsCols   = ["tiempo", "tiempo en heb", "años", "years", "antiguedad", "antigüedad", "tiempo_en_heb"];
-    private static readonly string[] StoreCols   = ["tienda", "store", "sucursal", "location"];
-    private static readonly string[] EmailCols   = ["correo", "email", "mail", "e-mail", "correo electronico", "correo_electronico"];
+    private static readonly string[] NameCols  = ["nombre", "nombre completo", "name", "full name", "nombre_completo"];
+    private static readonly string[] YearsCols = ["tiempo", "tiempo en heb", "años", "years", "antiguedad", "antigüedad", "tiempo_en_heb"];
+    private static readonly string[] StoreCols = ["tienda", "store", "sucursal", "location"];
+    private static readonly string[] EmailCols = ["correo", "email", "mail", "e-mail", "correo electronico", "correo_electronico"];
 
     public ImportService(IDatabaseService db, ILogger<ImportService> logger)
     {
         _db     = db;
         _logger = logger;
+    }
+
+    // ─── Template generation ─────────────────────────────────────────────────
+
+    public Task<string> GenerateTemplateAsync()
+    {
+        var filePath = Path.Combine(
+            Path.GetTempPath(),
+            "HEB_Participants_Template.xlsx");
+
+        using var wb = new XLWorkbook();
+        var ws = wb.Worksheets.Add("HEB");
+
+        // ── Column widths ─────────────────────────────────────────────────
+        ws.Column(1).Width = 30;   // NOMBRE completo
+        ws.Column(2).Width = 18;   // Tiempo en HEB
+        ws.Column(3).Width = 28;   // Tienda
+        ws.Column(4).Width = 32;   // CORREO
+
+        // ── Header row ────────────────────────────────────────────────────
+        var headers = new[] { "NOMBRE completo", "Tiempo en HEB", "Tienda", "CORREO" };
+        for (int col = 1; col <= headers.Length; col++)
+        {
+            var cell = ws.Cell(1, col);
+            cell.Value = headers[col - 1];
+            cell.Style.Font.Bold      = true;
+            cell.Style.Font.FontSize  = 12;
+            cell.Style.Font.FontColor = XLColor.White;
+            cell.Style.Fill.SetBackgroundColor(XLColor.FromHtml("#CC0000"));
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell.Style.Alignment.Vertical   = XLAlignmentVerticalValues.Center;
+            cell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+        }
+        ws.Row(1).Height = 22;
+
+        // ── Example rows (3 samples, gray italic) ────────────────────────
+        var examples = new[]
+        {
+            new[] { "Juan Pérez López",   "5 años",  "HEB San Antonio / 3",   "juan.perez@heb.com"   },
+            new[] { "Maria García Ruiz",  "12 años", "HEB Austin Central",     "maria.garcia@heb.com" },
+            new[] { "Carlos Mendoza",     "3 años",  "HEB Houston / 7",        "carlos.m@heb.com"     },
+        };
+
+        for (int r = 0; r < examples.Length; r++)
+        {
+            int row = r + 2;
+            for (int col = 1; col <= 4; col++)
+            {
+                var cell = ws.Cell(row, col);
+                cell.Value = examples[r][col - 1];
+                cell.Style.Font.Italic    = true;
+                cell.Style.Font.FontColor = XLColor.FromHtml("#9E9E9E");
+                cell.Style.Fill.SetBackgroundColor(XLColor.FromHtml("#F5F5F5"));
+                cell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Hair);
+            }
+        }
+
+        // ── Instructions in row 6 ─────────────────────────────────────────
+        var note = ws.Cell(6, 1);
+        note.Value = "⚠  Delete the gray example rows before uploading. " +
+                     "Required columns: NOMBRE completo, Tienda. " +
+                     "Optional: Tiempo en HEB, CORREO.";
+        note.Style.Font.Italic    = true;
+        note.Style.Font.FontSize  = 10;
+        note.Style.Font.FontColor = XLColor.FromHtml("#F57C00");
+        ws.Range("A6:D6").Merge();
+        ws.Row(6).Height = 18;
+
+        // ── Freeze header ─────────────────────────────────────────────────
+        ws.SheetView.FreezeRows(1);
+
+        wb.SaveAs(filePath);
+
+        _logger.LogInformation("Template generated at {Path}", filePath);
+        return Task.FromResult(filePath);
     }
 
     // ─── File picker ─────────────────────────────────────────────────────────
@@ -71,11 +145,11 @@ public sealed class ImportService : IImportService
                 PickerTitle = "Select Excel File (.xlsx)",
                 FileTypes   = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
-                    { DevicePlatform.Android, ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                               "application/vnd.ms-excel"] },
-                    { DevicePlatform.iOS,     ["com.microsoft.excel.xls",
-                                               "org.openxmlformats.spreadsheetml.sheet"] },
-                    { DevicePlatform.WinUI,   [".xlsx", ".xls"] },
+                    { DevicePlatform.Android,     ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                                    "application/vnd.ms-excel"] },
+                    { DevicePlatform.iOS,         ["com.microsoft.excel.xls",
+                                                    "org.openxmlformats.spreadsheetml.sheet"] },
+                    { DevicePlatform.WinUI,       [".xlsx", ".xls"] },
                     { DevicePlatform.MacCatalyst, ["xlsx"] },
                 })
             };
@@ -92,20 +166,19 @@ public sealed class ImportService : IImportService
 
     // ─── Import ──────────────────────────────────────────────────────────────
 
-    public async Task<ImportResult> ImportFromExcelAsync(string filePath, CancellationToken ct = default)
+    public async Task<ImportResult> ImportFromExcelAsync(
+        string filePath, CancellationToken ct = default)
     {
         int imported = 0, skipped = 0, errors = 0;
         var errorDetails = new List<string>();
 
         try
         {
-            // Copiar a temp para liberar el file lock en Android
             var tempPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(filePath));
             File.Copy(filePath, tempPath, overwrite: true);
 
             using var wb = new XLWorkbook(tempPath);
 
-            // Tomar la primera hoja que tenga datos
             var ws = wb.Worksheets.FirstOrDefault(s => s.RowsUsed().Any())
                      ?? throw new InvalidOperationException("The Excel file has no data.");
 
@@ -113,38 +186,35 @@ public sealed class ImportService : IImportService
             if (rows.Count < 2)
                 return new ImportResult { ErrorDetails = ["File has no data rows."] };
 
-            // ── Detectar columnas por encabezado ─────────────────────────────
             var headerRow = rows[0];
             int colName  = FindColumn(headerRow, NameCols);
             int colYears = FindColumn(headerRow, YearsCols);
             int colStore = FindColumn(headerRow, StoreCols);
-            int colEmail = FindColumn(headerRow, EmailCols);  // opcional
+            int colEmail = FindColumn(headerRow, EmailCols);
 
             if (colName == -1)
-                return new ImportResult { Errors = 1, ErrorDetails = ["Column 'NOMBRE' not found. Check the Excel header row."] };
+                return new ImportResult { Errors = 1,
+                    ErrorDetails = ["Column 'NOMBRE' not found. Download the template for reference."] };
             if (colStore == -1)
-                return new ImportResult { Errors = 1, ErrorDetails = ["Column 'TIENDA' not found. Check the Excel header row."] };
+                return new ImportResult { Errors = 1,
+                    ErrorDetails = ["Column 'TIENDA' not found. Download the template for reference."] };
 
             _logger.LogInformation(
                 "Import columns — Name:{N} Years:{Y} Store:{S} Email:{E}",
                 colName, colYears, colStore, colEmail);
 
-            // ── Procesar filas de datos ──────────────────────────────────────
             for (int i = 1; i < rows.Count; i++)
             {
                 ct.ThrowIfCancellationRequested();
-
                 var row = rows[i];
 
                 try
                 {
-                    // Nombre completo → FirstName + LastName
                     var fullName = GetCell(row, colName);
                     if (string.IsNullOrWhiteSpace(fullName)) continue;
 
                     var (firstName, lastName) = SplitFullName(fullName);
 
-                    // Tienda
                     var store = colStore != -1 ? GetCell(row, colStore) : string.Empty;
                     if (string.IsNullOrWhiteSpace(store))
                     {
@@ -153,38 +223,21 @@ public sealed class ImportService : IImportService
                         continue;
                     }
 
-                    // Años en la empresa (ej: "5 años", "10", "3 years")
-                    int years = 0;
-                    if (colYears != -1)
-                    {
-                        var yearsRaw = GetCell(row, colYears);
-                        years = ParseYears(yearsRaw);
-                    }
-
-                    // Email (opcional)
+                    int years = colYears != -1 ? ParseYears(GetCell(row, colYears)) : 0;
                     var email = colEmail != -1 ? GetCell(row, colEmail) : string.Empty;
 
-                    // Verificar duplicado
                     var isDupe = await _db.ExistsDuplicateAsync(firstName, lastName, store);
-                    if (isDupe)
-                    {
-                        skipped++;
-                        _logger.LogDebug("Duplicate skipped: {Name} / {Store}", fullName, store);
-                        continue;
-                    }
+                    if (isDupe) { skipped++; continue; }
 
-                    // Insertar
-                    var participant = new Participant
+                    await _db.InsertParticipantAsync(new Participant
                     {
-                        FirstName       = firstName,
-                        LastName        = lastName,
-                        Store           = store,
-                        YearsInCompany  = years,
-                        Email           = email,
+                        FirstName        = firstName,
+                        LastName         = lastName,
+                        Store            = store,
+                        YearsInCompany   = years,
+                        Email            = email,
                         RegistrationDate = DateTime.UtcNow
-                    };
-
-                    await _db.InsertParticipantAsync(participant);
+                    });
                     imported++;
                 }
                 catch (Exception ex)
@@ -195,7 +248,6 @@ public sealed class ImportService : IImportService
                 }
             }
 
-            // Limpiar temp
             try { File.Delete(tempPath); } catch { /* ignore */ }
         }
         catch (Exception ex)
@@ -220,7 +272,6 @@ public sealed class ImportService : IImportService
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    /// <summary>Busca la columna cuyo encabezado coincide con alguno de los candidatos.</summary>
     private static int FindColumn(IXLRow headerRow, string[] candidates)
     {
         foreach (var cell in headerRow.CellsUsed())
@@ -232,29 +283,18 @@ public sealed class ImportService : IImportService
         return -1;
     }
 
-    private static string GetCell(IXLRow row, int col)
-    {
-        if (col == -1) return string.Empty;
-        return row.Cell(col).GetString().Trim();
-    }
+    private static string GetCell(IXLRow row, int col) =>
+        col == -1 ? string.Empty : row.Cell(col).GetString().Trim();
 
-    /// <summary>
-    /// Normaliza texto: minúsculas + quitar acentos para comparación robusta.
-    /// </summary>
     private static string Normalize(string input)
     {
         if (string.IsNullOrEmpty(input)) return string.Empty;
-        var lower = input.ToLowerInvariant();
-        return lower
-            .Replace("á", "a").Replace("é", "e").Replace("í", "i")
-            .Replace("ó", "o").Replace("ú", "u").Replace("ü", "u")
+        return input.ToLowerInvariant()
+            .Replace("á","a").Replace("é","e").Replace("í","i")
+            .Replace("ó","o").Replace("ú","u").Replace("ü","u")
             .Trim();
     }
 
-    /// <summary>
-    /// "Juan Pérez López" → ("Juan", "Pérez López")
-    /// "John" → ("John", "")
-    /// </summary>
     private static (string First, string Last) SplitFullName(string fullName)
     {
         var parts = fullName.Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
@@ -266,19 +306,12 @@ public sealed class ImportService : IImportService
         };
     }
 
-    /// <summary>
-    /// Extrae el número de strings como "5 años", "10 years", "3", "2.5".
-    /// Redondea si viene decimal.
-    /// </summary>
     private static int ParseYears(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw)) return 0;
-
-        // Extraer primer número (entero o decimal) del string
         var match = Regex.Match(raw, @"\d+(\.\d+)?");
         if (!match.Success) return 0;
-
-        return (int)Math.Round(double.Parse(match.Value,
-            System.Globalization.CultureInfo.InvariantCulture));
+        return (int)Math.Round(double.Parse(
+            match.Value, System.Globalization.CultureInfo.InvariantCulture));
     }
 }

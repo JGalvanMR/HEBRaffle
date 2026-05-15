@@ -8,240 +8,338 @@
     Title="Import Participants"
     Style="{StaticResource PageBase}">
 
-    <ScrollView>
-        <VerticalStackLayout Spacing="0">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Spacing="0">
 
-            <!-- Header stripe -->
-            <BoxView HeightRequest="4" Color="{StaticResource HEBRed}" />
+                <!-- Header stripe -->
+                <BoxView HeightRequest="4" Color="{StaticResource HEBRed}" />
 
-            <VerticalStackLayout Padding="24,24,24,40" Spacing="20">
+                <VerticalStackLayout Padding="24,24,24,40" Spacing="20">
 
-                <!-- ── Instrucciones ────────────────────────────────────── -->
-                <Border Style="{StaticResource Card}">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="📋  HOW IT WORKS"
-                               Style="{StaticResource SectionHeader}" />
+                    <!-- ══════════════════════════════════════════════════════ -->
+                    <!-- STEP 1 — Download Template                            -->
+                    <!-- ══════════════════════════════════════════════════════ -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="14">
 
-                        <Label Style="{StaticResource BodyText}">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span Text="1. " FontAttributes="Bold" />
-                                    <Span Text="Prepare your Excel file (.xlsx) with these columns:" />
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-
-                        <!-- Tabla de columnas -->
-                        <Border BackgroundColor="{StaticResource Surface200}"
-                                StrokeThickness="0"
-                                StrokeShape="RoundRectangle 8"
-                                Padding="12,10">
-                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
-                                  RowSpacing="6" ColumnSpacing="16">
-
-                                <Label Grid.Row="0" Grid.Column="0" Text="Column"
-                                       FontAttributes="Bold" Style="{StaticResource CaptionText}" />
-                                <Label Grid.Row="0" Grid.Column="1" Text="Example"
-                                       FontAttributes="Bold" Style="{StaticResource CaptionText}" />
-
-                                <Label Grid.Row="1" Grid.Column="0" Text="NOMBRE completo *"
-                                       FontSize="13" TextColor="{StaticResource OnSurface700}" />
-                                <Label Grid.Row="1" Grid.Column="1" Text="Juan Pérez López"
-                                       FontSize="13" TextColor="{StaticResource OnSurface500}" />
-
-                                <Label Grid.Row="2" Grid.Column="0" Text="Tienda *"
-                                       FontSize="13" TextColor="{StaticResource OnSurface700}" />
-                                <Label Grid.Row="2" Grid.Column="1" Text="San Antonio / 3"
-                                       FontSize="13" TextColor="{StaticResource OnSurface500}" />
-
-                                <Label Grid.Row="3" Grid.Column="0" Text="Tiempo en HEB"
-                                       FontSize="13" TextColor="{StaticResource OnSurface700}" />
-                                <Label Grid.Row="3" Grid.Column="1" Text="5 años"
-                                       FontSize="13" TextColor="{StaticResource OnSurface500}" />
-
-                                <Label Grid.Row="4" Grid.Column="0" Text="CORREO"
-                                       FontSize="13" TextColor="{StaticResource OnSurface700}" />
-                                <Label Grid.Row="4" Grid.Column="1" Text="juan@empresa.com"
-                                       FontSize="13" TextColor="{StaticResource OnSurface500}" />
-                            </Grid>
-                        </Border>
-
-                        <Label>
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span Text="2. " FontAttributes="Bold" />
-                                    <Span Text="Tap Select File and choose your .xlsx" />
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                        <Label>
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span Text="3. " FontAttributes="Bold" />
-                                    <Span Text="Tap Import — duplicates are skipped automatically." />
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- ── File picker ──────────────────────────────────────── -->
-                <Border Style="{StaticResource Card}">
-                    <VerticalStackLayout Spacing="14">
-
-                        <Label Text="EXCEL FILE"
-                               Style="{StaticResource SectionHeader}" />
-
-                        <!-- Área de archivo seleccionado -->
-                        <Border BackgroundColor="{StaticResource Surface200}"
-                                StrokeThickness="1.5"
-                                Stroke="{StaticResource Surface300}"
-                                StrokeShape="RoundRectangle 12"
-                                Padding="16,14">
+                            <!-- Step badge + title -->
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                                <Label Grid.Column="0"
-                                       Text="📄"
-                                       FontSize="24"
-                                       VerticalOptions="Center" />
+                                <Border Grid.Column="0"
+                                        WidthRequest="32" HeightRequest="32"
+                                        BackgroundColor="{StaticResource HEBRed}"
+                                        StrokeThickness="0"
+                                        StrokeShape="Ellipse">
+                                    <Label Text="1"
+                                           FontSize="15" FontAttributes="Bold"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
                                 <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                    <Label Text="{Binding SelectedFileName}"
-                                           FontSize="14"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource OnSurface900}"
-                                           LineBreakMode="TailTruncation" />
-                                    <Label Text="Tap 'Select File' to choose your Excel"
-                                           FontSize="12"
-                                           TextColor="{StaticResource OnSurface400}"
-                                           IsVisible="{Binding HasFile, Converter={StaticResource InvertBool}}" />
-                                    <Label Text="Ready to import"
-                                           FontSize="12"
-                                           TextColor="{StaticResource SuccessGreen}"
-                                           IsVisible="{Binding HasFile}" />
+                                    <Label Text="Download the Template"
+                                           FontSize="16" FontAttributes="Bold"
+                                           TextColor="{StaticResource OnSurface900}" />
+                                    <Label Text="Fill it in Excel, then come back to upload."
+                                           Style="{StaticResource CaptionText}" />
                                 </VerticalStackLayout>
                             </Grid>
-                        </Border>
 
-                        <Button Text="📂  Select File"
-                                Command="{Binding PickFileCommand}"
-                                Style="{StaticResource SecondaryButton}"
-                                IsEnabled="{Binding IsNotBusy}" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- ── Progress ──────────────────────────────────────────── -->
-                <VerticalStackLayout IsVisible="{Binding IsBusy}" Spacing="10">
-                    <ActivityIndicator IsRunning="True"
-                                       Color="{StaticResource HEBRed}"
-                                       HeightRequest="36" />
-                    <Label Text="{Binding ProgressMessage}"
-                           TextColor="{StaticResource OnSurface500}"
-                           FontSize="14"
-                           HorizontalOptions="Center" />
-                </VerticalStackLayout>
-
-                <!-- ── Result panel ──────────────────────────────────────── -->
-                <Border IsVisible="{Binding ShowResult}"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 16"
-                        Padding="20,16">
-                    <Border.Background>
-                        <SolidColorBrush Color="{Binding ResultIsSuccess,
-                            Converter={StaticResource WinnerColorConverter}}" />
-                    </Border.Background>
-                    <VerticalStackLayout Spacing="14">
-
-                        <!-- Resumen -->
-                        <Label Text="{Binding ResultSummary}"
-                               FontSize="15"
-                               FontAttributes="Bold"
-                               TextColor="White"
-                               HorizontalTextAlignment="Center" />
-
-                        <!-- Stats row -->
-                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                            <Border Grid.Column="0"
-                                    BackgroundColor="#22000000"
+                            <!-- Column preview table -->
+                            <Border BackgroundColor="{StaticResource Surface200}"
                                     StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 10"
-                                    Padding="10,8">
-                                <VerticalStackLayout Spacing="2">
-                                    <Label Text="{Binding ImportedCount}"
-                                           FontSize="26" FontAttributes="Bold"
-                                           TextColor="White"
-                                           HorizontalOptions="Center" />
-                                    <Label Text="Imported"
-                                           FontSize="11" TextColor="#CCFFFFFF"
-                                           HorizontalOptions="Center" />
-                                </VerticalStackLayout>
-                            </Border>
-                            <Border Grid.Column="1"
-                                    BackgroundColor="#22000000"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 10"
-                                    Padding="10,8">
-                                <VerticalStackLayout Spacing="2">
-                                    <Label Text="{Binding SkippedCount}"
-                                           FontSize="26" FontAttributes="Bold"
-                                           TextColor="White"
-                                           HorizontalOptions="Center" />
-                                    <Label Text="Duplicates"
-                                           FontSize="11" TextColor="#CCFFFFFF"
-                                           HorizontalOptions="Center" />
-                                </VerticalStackLayout>
-                            </Border>
-                            <Border Grid.Column="2"
-                                    BackgroundColor="#22000000"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 10"
-                                    Padding="10,8">
-                                <VerticalStackLayout Spacing="2">
-                                    <Label Text="{Binding ErrorCount}"
-                                           FontSize="26" FontAttributes="Bold"
-                                           TextColor="White"
-                                           HorizontalOptions="Center" />
-                                    <Label Text="Errors"
-                                           FontSize="11" TextColor="#CCFFFFFF"
-                                           HorizontalOptions="Center" />
-                                </VerticalStackLayout>
-                            </Border>
-                        </Grid>
+                                    StrokeShape="RoundRectangle 8"
+                                    Padding="12,10">
+                                <Grid ColumnDefinitions="*,*"
+                                      RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                                      RowSpacing="6" ColumnSpacing="16">
 
-                        <!-- Detalles de errores (si los hay) -->
-                        <Border IsVisible="{Binding HasErrorDetails}"
-                                BackgroundColor="#33000000"
-                                StrokeThickness="0"
-                                StrokeShape="RoundRectangle 8"
-                                Padding="12,10">
-                            <Label Text="{Binding ErrorDetails}"
-                                   FontSize="12"
+                                    <Label Grid.Row="0" Grid.Column="0" Text="Column"
+                                           FontAttributes="Bold" Style="{StaticResource CaptionText}" />
+                                    <Label Grid.Row="0" Grid.Column="1" Text="Example"
+                                           FontAttributes="Bold" Style="{StaticResource CaptionText}" />
+
+                                    <Label Grid.Row="1" Grid.Column="0" Text="NOMBRE completo *"
+                                           FontSize="12" TextColor="{StaticResource OnSurface700}" />
+                                    <Label Grid.Row="1" Grid.Column="1" Text="Juan Pérez López"
+                                           FontSize="12" TextColor="{StaticResource OnSurface500}" />
+
+                                    <Label Grid.Row="2" Grid.Column="0" Text="Tienda *"
+                                           FontSize="12" TextColor="{StaticResource OnSurface700}" />
+                                    <Label Grid.Row="2" Grid.Column="1" Text="HEB San Antonio / 3"
+                                           FontSize="12" TextColor="{StaticResource OnSurface500}" />
+
+                                    <Label Grid.Row="3" Grid.Column="0" Text="Tiempo en HEB"
+                                           FontSize="12" TextColor="{StaticResource OnSurface700}" />
+                                    <Label Grid.Row="3" Grid.Column="1" Text="5 años"
+                                           FontSize="12" TextColor="{StaticResource OnSurface500}" />
+
+                                    <Label Grid.Row="4" Grid.Column="0" Text="CORREO"
+                                           FontSize="12" TextColor="{StaticResource OnSurface700}" />
+                                    <Label Grid.Row="4" Grid.Column="1" Text="juan@heb.com"
+                                           FontSize="12" TextColor="{StaticResource OnSurface500}" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Download button -->
+                            <Button Text="⬇  Download Template (.xlsx)"
+                                    Command="{Binding DownloadTemplateCommand}"
+                                    IsEnabled="{Binding IsDownloadingTemplate,
+                                        Converter={StaticResource InvertBool}}"
+                                    Style="{StaticResource SecondaryButton}" />
+
+                            <!-- Spinner while generating -->
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="10"
+                                  IsVisible="{Binding IsDownloadingTemplate}">
+                                <ActivityIndicator Grid.Column="0"
+                                                   IsRunning="True"
+                                                   Color="{StaticResource HEBRed}"
+                                                   HeightRequest="20"
+                                                   WidthRequest="20" />
+                                <Label Grid.Column="1"
+                                       Text="Generating template…"
+                                       Style="{StaticResource CaptionText}"
+                                       VerticalOptions="Center" />
+                            </Grid>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- ══════════════════════════════════════════════════════ -->
+                    <!-- STEP 2 — Select File                                  -->
+                    <!-- ══════════════════════════════════════════════════════ -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="14">
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Grid.Column="0"
+                                        WidthRequest="32" HeightRequest="32"
+                                        BackgroundColor="{StaticResource HEBRed}"
+                                        StrokeThickness="0"
+                                        StrokeShape="Ellipse">
+                                    <Label Text="2"
+                                           FontSize="15" FontAttributes="Bold"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="Select Your Filled File"
+                                           FontSize="16" FontAttributes="Bold"
+                                           TextColor="{StaticResource OnSurface900}" />
+                                    <Label Text="Choose the .xlsx you completed."
+                                           Style="{StaticResource CaptionText}" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- File display area -->
+                            <Border BackgroundColor="{StaticResource Surface200}"
+                                    StrokeThickness="1.5"
+                                    Stroke="{StaticResource Surface300}"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="16,14">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Label Grid.Column="0" Text="📄"
+                                           FontSize="24" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="2"
+                                                         VerticalOptions="Center">
+                                        <Label Text="{Binding SelectedFileName}"
+                                               FontSize="14" FontAttributes="Bold"
+                                               TextColor="{StaticResource OnSurface900}"
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Text="No file selected yet"
+                                               FontSize="12"
+                                               TextColor="{StaticResource OnSurface400}"
+                                               IsVisible="{Binding HasFile,
+                                                   Converter={StaticResource InvertBool}}" />
+                                        <Label Text="✅  Ready to import"
+                                               FontSize="12"
+                                               TextColor="{StaticResource SuccessGreen}"
+                                               IsVisible="{Binding HasFile}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <Button Text="📂  Select File"
+                                    Command="{Binding PickFileCommand}"
+                                    Style="{StaticResource SecondaryButton}"
+                                    IsEnabled="{Binding IsNotBusy}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- ══════════════════════════════════════════════════════ -->
+                    <!-- STEP 3 — Import                                       -->
+                    <!-- ══════════════════════════════════════════════════════ -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="14">
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Grid.Column="0"
+                                        WidthRequest="32" HeightRequest="32"
+                                        BackgroundColor="{StaticResource HEBRed}"
+                                        StrokeThickness="0"
+                                        StrokeShape="Ellipse">
+                                    <Label Text="3"
+                                           FontSize="15" FontAttributes="Bold"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="Import Participants"
+                                           FontSize="16" FontAttributes="Bold"
+                                           TextColor="{StaticResource OnSurface900}" />
+                                    <Label Text="Duplicates are skipped automatically."
+                                           Style="{StaticResource CaptionText}" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Progress -->
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="10"
+                                  IsVisible="{Binding IsBusy}">
+                                <ActivityIndicator Grid.Column="0"
+                                                   IsRunning="True"
+                                                   Color="{StaticResource HEBRed}"
+                                                   HeightRequest="24"
+                                                   WidthRequest="24" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding ProgressMessage}"
+                                       Style="{StaticResource BodyText}"
+                                       VerticalOptions="Center" />
+                            </Grid>
+
+                            <!-- Import button -->
+                            <Button Text="⬆  IMPORT PARTICIPANTS"
+                                    Command="{Binding ImportCommand}"
+                                    IsEnabled="{Binding CanImport}"
+                                    Style="{StaticResource PrimaryButton}"
+                                    FontSize="16"
+                                    HeightRequest="54" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- ── Result panel ──────────────────────────────────── -->
+                    <Border IsVisible="{Binding ShowResult}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 16"
+                            Padding="20,16">
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding ResultIsSuccess,
+                                Converter={StaticResource WinnerColorConverter}}" />
+                        </Border.Background>
+                        <VerticalStackLayout Spacing="14">
+
+                            <Label Text="{Binding ResultSummary}"
+                                   FontSize="15" FontAttributes="Bold"
                                    TextColor="White"
-                                   LineBreakMode="WordWrap" />
-                        </Border>
+                                   HorizontalTextAlignment="Center" />
 
-                    </VerticalStackLayout>
-                </Border>
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                <!-- Imported -->
+                                <Border Grid.Column="0"
+                                        BackgroundColor="#22000000"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="10,8">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding ImportedCount}"
+                                               FontSize="28" FontAttributes="Bold"
+                                               TextColor="White"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="Imported"
+                                               FontSize="11" TextColor="#CCFFFFFF"
+                                               HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Border>
+                                <!-- Skipped -->
+                                <Border Grid.Column="1"
+                                        BackgroundColor="#22000000"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="10,8">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding SkippedCount}"
+                                               FontSize="28" FontAttributes="Bold"
+                                               TextColor="White"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="Duplicates"
+                                               FontSize="11" TextColor="#CCFFFFFF"
+                                               HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Border>
+                                <!-- Errors -->
+                                <Border Grid.Column="2"
+                                        BackgroundColor="#22000000"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="10,8">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding ErrorCount}"
+                                               FontSize="28" FontAttributes="Bold"
+                                               TextColor="White"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="Errors"
+                                               FontSize="11" TextColor="#CCFFFFFF"
+                                               HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
 
-                <!-- ── Error general ─────────────────────────────────────── -->
-                <Border IsVisible="{Binding HasError}"
-                        BackgroundColor="{StaticResource ErrorLight}"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 8"
-                        Padding="14,10">
-                    <Label Text="{Binding ErrorMessage}"
-                           TextColor="{StaticResource ErrorRed}"
-                           FontSize="14" />
-                </Border>
+                            <!-- Error details -->
+                            <Border IsVisible="{Binding HasErrorDetails}"
+                                    BackgroundColor="#33000000"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    Padding="12,10">
+                                <Label Text="{Binding ErrorDetails}"
+                                       FontSize="12" TextColor="White"
+                                       LineBreakMode="WordWrap" />
+                            </Border>
 
-                <!-- ── Import button ─────────────────────────────────────── -->
-                <Button Text="⬆  IMPORT PARTICIPANTS"
-                        Command="{Binding ImportCommand}"
-                        IsEnabled="{Binding CanImport}"
-                        Style="{StaticResource PrimaryButton}"
-                        FontSize="17"
-                        HeightRequest="58" />
+                        </VerticalStackLayout>
+                    </Border>
 
+                    <!-- ── Error general ───────────────────────────────────── -->
+                    <Border IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource ErrorLight}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="14,10">
+                        <Label Text="{Binding ErrorMessage}"
+                               TextColor="{StaticResource ErrorRed}"
+                               FontSize="14" />
+                    </Border>
+
+                </VerticalStackLayout>
             </VerticalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+        </ScrollView>
+
+        <!-- ── Template Toast ──────────────────────────────────────────────── -->
+        <Border IsVisible="{Binding ShowTemplateToast}"
+                BackgroundColor="{StaticResource InfoBlue}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 14"
+                Padding="20,14"
+                Margin="16,0,16,32"
+                VerticalOptions="End"
+                ZIndex="100">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,4" Radius="12" Opacity="0.2" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Label Grid.Column="0" Text="📥" FontSize="20" VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Text="{Binding TemplateToast}"
+                       TextColor="White"
+                       FontSize="13" FontAttributes="Bold"
+                       VerticalOptions="Center"
+                       LineBreakMode="WordWrap" />
+            </Grid>
+        </Border>
+
+    </Grid>
 
 </ContentPage>
