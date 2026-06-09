@@ -1,32 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>UIDeviceFamily</key>
-	<array>
-		<integer>1</integer>
-		<integer>2</integer>
-	</array>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>XSAppIconAssets</key>
-	<string>Assets.xcassets/appicon.appiconset</string>
-</dict>
+	<dict>
+
+		<!-- ─── Requerido para iPhone/iPad ──────────────────────── -->
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+
+		<!-- ─── Familias de dispositivo ─────────────────────────── -->
+		<key>UIDeviceFamily</key>
+		<array>
+			<integer>1</integer>
+			<!-- iPhone -->
+			<integer>2</integer>
+			<!-- iPad   -->
+		</array>
+
+		<!-- ─── Capacidades mínimas ──────────────────────────────── -->
+		<key>UIRequiredDeviceCapabilities</key>
+		<array>
+			<string>arm64</string>
+		</array>
+
+		<!-- ─── Orientaciones – iPhone ───────────────────────────── -->
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+
+		<!-- ─── Orientaciones – iPad ─────────────────────────────── -->
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+
+		<!-- ─── Ícono ─────────────────────────────────────────────── -->
+		<key>XSAppIconAssets</key>
+		<string>Assets.xcassets/appicon.appiconset</string>
+
+		<!-- ─── Compartición de archivos ────────────────────────────
+         UIFileSharingEnabled → ~/Documents visible en app "Archivos" de iOS y iTunes
+         LSSupportsOpeningDocumentsInPlace → permite abrir .xlsx directamente en Excel/Numbers
+    ──────────────────────────────────────────────────────────── -->
+		<key>UIFileSharingEnabled</key>
+		<true/>
+		<key>LSSupportsOpeningDocumentsInPlace</key>
+		<true/>
+
+		<!-- ─── Status bar ──────────────────────────────────────────
+         La app usa fondo rojo/dorado en toda la interfaz.
+         Iconos blancos funcionan en todos los contextos.
+         UIViewControllerBasedStatusBarAppearance=false permite
+         control global desde Info.plist sin override por VC.
+    ──────────────────────────────────────────────────────────── -->
+		<key>UIStatusBarStyle</key>
+		<string>UIStatusBarStyleLightContent</string>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
+
+	</dict>
 </plist>

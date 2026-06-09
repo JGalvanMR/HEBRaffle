@@ -8,6 +8,10 @@ namespace HEBRaffle.Services;
 
 public interface IDatabaseService
 {
+    Task<int> ClearAllWinnersAsync();
+    Task<int> ClearAllParticipantsAsync();
+    Task<int> ClearEverythingAsync();  // Participantes + Ganadores
+    Task<(int Participants, int Winners)> GetCountsAsync();
     Task InitializeAsync(CancellationToken ct = default);
 
     // Participants

@@ -1,13 +1,14 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>                     
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!--  ═══════════════════════════════════════════════════════════════════  -->
     <!--  Converters (global registration)  -->
     <!--  ═══════════════════════════════════════════════════════════════════  -->
-    <converters:BoolToColorConverter xmlns:converters="clr-namespace:HEBRaffle.Converters"
-                                     x:Key="WinnerColorConverter"
-                                     TrueColor="#2E7D32"
-                                     FalseColor="Transparent" />
+    <converters:BoolToColorConverter
+        xmlns:converters="clr-namespace:HEBRaffle.Converters"
+        x:Key="WinnerColorConverter"
+        FalseColor="Transparent"
+        TrueColor="#2E7D32" />
 
     <converters:InvertBoolConverter xmlns:converters="clr-namespace:HEBRaffle.Converters" x:Key="InvertBool" />
 
@@ -65,10 +66,11 @@
         <Setter Property="Padding" Value="20,0" />
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="{StaticResource HEBRed}"
-                        Radius="8"
-                        Opacity="0.35"
-                        Offset="0,4" />
+                <Shadow
+                    Brush="{StaticResource HEBRed}"
+                    Opacity="0.35"
+                    Radius="8"
+                    Offset="0,4" />
             </Setter.Value>
         </Setter>
         <Style.Triggers>
@@ -149,17 +151,19 @@
         <Setter Property="Padding" Value="20" />
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="Black"
-                        Radius="12"
-                        Opacity="0.08"
-                        Offset="0,2" />
+                <Shadow
+                    Brush="Black"
+                    Opacity="0.08"
+                    Radius="12"
+                    Offset="0,2" />
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style x:Key="StatCard"
-           TargetType="Border"
-           BasedOn="{StaticResource Card}">
+    <Style
+        x:Key="StatCard"
+        BasedOn="{StaticResource Card}"
+        TargetType="Border">
         <Setter Property="Padding" Value="16" />
     </Style>
 
@@ -187,10 +191,11 @@
         <Setter Property="Margin" Value="16,4" />
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="Black"
-                        Radius="6"
-                        Opacity="0.06"
-                        Offset="0,1" />
+                <Shadow
+                    Brush="Black"
+                    Opacity="0.06"
+                    Radius="6"
+                    Offset="0,1" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -199,7 +204,7 @@
     <!--  Shell / Navigation Bar  -->
     <!--  ═══════════════════════════════════════════════════════════════════  -->
 
-    <Style TargetType="Shell" ApplyToDerivedTypes="True">
+    <Style ApplyToDerivedTypes="True" TargetType="Shell">
         <Setter Property="Shell.BackgroundColor" Value="{StaticResource HEBRed}" />
         <Setter Property="Shell.ForegroundColor" Value="White" />
         <Setter Property="Shell.TitleColor" Value="White" />

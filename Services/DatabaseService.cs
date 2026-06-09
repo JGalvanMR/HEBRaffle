@@ -29,6 +29,45 @@ public sealed class DatabaseService : IDatabaseService
         }
     }
 
+    // DatabaseService.cs
+    public async Task<int> ClearAllWinnersAsync()
+    {
+        await InitializeAsync();
+        return await _db.DeleteAllAsync<Winner>();
+    }
+
+    public async Task<int> ClearAllParticipantsAsync()
+    {
+        await InitializeAsync();
+
+        // Primero eliminar ganadores (dependen de participantes)
+        await _db.DeleteAllAsync<Winner>();
+
+        // Luego eliminar participantes
+        return await _db.DeleteAllAsync<Participant>();
+    }
+
+    public async Task<int> ClearEverythingAsync()
+    {
+        await InitializeAsync();
+
+        int totalDeleted = 0;
+        totalDeleted += await _db.DeleteAllAsync<Winner>();
+        totalDeleted += await _db.DeleteAllAsync<Participant>();
+
+        return totalDeleted;
+    }
+
+    public async Task<(int Participants, int Winners)> GetCountsAsync()
+    {
+        await InitializeAsync();
+
+        var participants = await _database.Table<Participant>().CountAsync();
+        var winners = await _database.Table<Winner>().CountAsync();
+
+        return (participants, winners);
+    }
+
     // ─── Participants ────────────────────────────────────────────────────────
 
     public async Task<List<Participant>> GetAllParticipantsAsync()
@@ -146,4 +185,6 @@ public sealed class DatabaseService : IDatabaseService
             throw;
         }
     }
+
+
 }

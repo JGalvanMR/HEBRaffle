@@ -6,53 +6,55 @@ using System.Collections.ObjectModel;
 
 namespace HEBRaffle.ViewModels;
 
-/// <summary>
-/// Drives the raffle screen.
-/// Animation: a IDispatcherTimer cycles through random participant names rapidly,
-/// decelerating until it lands on the drawn winner.
-/// </summary>
 public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
 {
-    private readonly IRaffleService    _raffle;
-    private readonly IDatabaseService  _db;
-    private readonly IExportService    _export;
+    private readonly IRaffleService _raffle;
+    private readonly IDatabaseService _db;
+    private readonly IExportService _export;
     private readonly INavigationService _nav;
 
     // ─── Configuration ────────────────────────────────────────────────────────
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanDraw))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDraw))]
     private int _numberOfWinners = 1;
 
-    [ObservableProperty] private int    _eligibleCount;
-    [ObservableProperty] private int    _currentWinnerCount;
+    [ObservableProperty] private int _eligibleCount;
+    [ObservableProperty] private int _currentWinnerCount;
     [ObservableProperty] private string _statusMessage = "Ready to draw";
 
     // ─── Animation ────────────────────────────────────────────────────────────
-    [ObservableProperty] private string  _animatedName  = "---";
-    [ObservableProperty] private bool    _isAnimating;
-    [ObservableProperty] private bool    _showResult;
-    [ObservableProperty] private string  _resultName    = string.Empty;
-    [ObservableProperty] private string  _resultStore   = string.Empty;
-    [ObservableProperty] private int     _resultPrize;
+    [ObservableProperty] private string _animatedName = "---";
+    [ObservableProperty] private bool _isAnimating;
+    [ObservableProperty] private bool _showResult;
+    [ObservableProperty] private string _resultName = string.Empty;
+    [ObservableProperty] private string _resultStore = string.Empty;
+    [ObservableProperty] private int _resultPrize;
 
     // ─── Winners list ─────────────────────────────────────────────────────────
     public ObservableCollection<Winner> SessionWinners { get; } = [];
 
+    /// <summary>
+    /// Controla la visibilidad de la tarjeta "Session Winners".
+    /// Corrige el binding roto IntToColor→IsVisible del código original.
+    /// </summary>
+    public bool HasSessionWinners => SessionWinners.Count > 0;
+
     // ─── Internal animation state ─────────────────────────────────────────────
-    private IDispatcherTimer?     _animTimer;
-    private List<string>          _namePool     = [];
-    private List<Winner>          _pendingWinners = [];
-    private int                   _pendingIndex;
-    private int                   _animTick;
-    private const int             AnimTotalTicks = 40;   // total frames
-    private const int             AnimFastMs     = 40;   // ms per frame (fast)
-    private const int             AnimSlowMs     = 220;  // ms per frame (slow)
+    private IDispatcherTimer? _animTimer;
+    private List<string> _namePool = [];
+    private List<Winner> _pendingWinners = [];
+    private int _pendingIndex;
+    private int _animTick;
+    private const int AnimTotalTicks = 40;
+    private const int AnimFastMs = 40;
+    private const int AnimSlowMs = 220;
 
     private CancellationTokenSource _cts = new();
 
     public bool CanDraw =>
-        !IsBusy              &&
-        !IsAnimating         &&
-        EligibleCount > 0    &&
+        !IsBusy &&
+        !IsAnimating &&
+        EligibleCount > 0 &&
         NumberOfWinners >= 1 &&
         NumberOfWinners <= Math.Max(1, EligibleCount);
 
@@ -63,10 +65,14 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
         INavigationService nav)
     {
         _raffle = raffle;
-        _db     = db;
+        _db = db;
         _export = export;
-        _nav    = nav;
-        Title   = "Raffle Draw";
+        _nav = nav;
+        Title = "Raffle Draw";
+
+        // Notifica HasSessionWinners cuando la colección cambia
+        SessionWinners.CollectionChanged += (_, _) =>
+            OnPropertyChanged(nameof(HasSessionWinners));
     }
 
     public override async Task OnAppearingAsync()
@@ -80,7 +86,7 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     private async Task RefreshStateAsync()
     {
-        EligibleCount      = await _raffle.GetEligibleCountAsync();
+        EligibleCount = await _raffle.GetEligibleCountAsync();
         CurrentWinnerCount = await _db.GetWinnerCountAsync();
 
         StatusMessage = EligibleCount == 0
@@ -111,7 +117,6 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
         {
             ShowResult = false;
 
-            // Draw winners from service
             _pendingWinners = await _raffle.DrawWinnersAsync(NumberOfWinners, _cts.Token);
 
             if (_pendingWinners.Count == 0)
@@ -120,7 +125,6 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
                 return;
             }
 
-            // Build name pool for animation from DB
             var all = await _db.GetAllParticipantsAsync();
             _namePool = all
                 .Where(p => !_pendingWinners.Any(w => w.ParticipantId == p.Id))
@@ -128,12 +132,8 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
                 .OrderBy(_ => Guid.NewGuid())
                 .ToList();
 
-            // Add winner names to pool too (animation will still show them)
-            _namePool.AddRange(_pendingWinners
-                .Select(w => w.Participant?.FullName ?? "---"));
-
-            if (_namePool.Count == 0)
-                _namePool = ["---"];
+            _namePool.AddRange(_pendingWinners.Select(w => w.Participant?.FullName ?? "---"));
+            if (_namePool.Count == 0) _namePool = ["---"];
 
             _pendingIndex = 0;
             StartAnimation();
@@ -149,27 +149,20 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
         DrawCommand.NotifyCanExecuteChanged();
 
         _animTick = 0;
-
         _animTimer = Application.Current!.Dispatcher.CreateTimer();
         _animTimer.Interval = TimeSpan.FromMilliseconds(AnimFastMs);
-        _animTimer.Tick    += OnAnimTick;
+        _animTimer.Tick += OnAnimTick;
         _animTimer.Start();
     }
 
     private void OnAnimTick(object? sender, EventArgs e)
     {
         _animTick++;
-
-        // Progress ratio [0..1]: how close to end
         double ratio = (double)_animTick / AnimTotalTicks;
 
-        // Show random name during animation
         if (ratio < 0.85)
         {
-            var rnd = _namePool[Random.Shared.Next(_namePool.Count)];
-            AnimatedName = rnd;
-
-            // Gradually slow down timer interval
+            AnimatedName = _namePool[Random.Shared.Next(_namePool.Count)];
             if (ratio > 0.5)
             {
                 var ms = (int)Lerp(AnimFastMs, AnimSlowMs, (ratio - 0.5) * 2.0);
@@ -178,12 +171,8 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
         }
         else
         {
-            // Show the actual winner name in the last few frames
             if (_pendingIndex < _pendingWinners.Count)
-            {
-                var winner = _pendingWinners[_pendingIndex];
-                AnimatedName = winner.Participant?.FullName ?? "---";
-            }
+                AnimatedName = _pendingWinners[_pendingIndex].Participant?.FullName ?? "---";
         }
 
         if (_animTick >= AnimTotalTicks)
@@ -195,26 +184,19 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
 
     private async Task RevealNextWinnerAsync()
     {
-        if (_pendingIndex >= _pendingWinners.Count)
-        {
-            FinishAnimation();
-            return;
-        }
+        if (_pendingIndex >= _pendingWinners.Count) { FinishAnimation(); return; }
 
         var winner = _pendingWinners[_pendingIndex];
         _pendingIndex++;
 
-        // Reveal current winner
-        ResultName  = winner.Participant?.FullName  ?? "---";
-        ResultStore = winner.Participant?.Store     ?? "";
+        ResultName = winner.Participant?.FullName ?? "---";
+        ResultStore = winner.Participant?.Store ?? "";
         ResultPrize = winner.PrizeNumber;
-        ShowResult  = true;
+        ShowResult = true;
         AnimatedName = ResultName;
 
-        // Update local collection
         SessionWinners.Add(winner);
 
-        // If more winners to reveal, wait and continue animation
         if (_pendingIndex < _pendingWinners.Count)
         {
             await Task.Delay(1800);
@@ -234,28 +216,25 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
     private void FinishAnimation()
     {
         IsAnimating = false;
-        ShowResult  = true;
+        ShowResult = true;
         DrawCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(CanDraw));
-
         _ = RefreshStateAsync();
     }
 
-    // ─── Increment / Decrement winner count ───────────────────────────────────
+    // ─── Increment / Decrement ────────────────────────────────────────────────
 
     [RelayCommand]
     private void IncrementWinners()
     {
-        if (NumberOfWinners < 30 && NumberOfWinners < EligibleCount)
-            NumberOfWinners++;
+        if (NumberOfWinners < 30 && NumberOfWinners < EligibleCount) NumberOfWinners++;
         OnPropertyChanged(nameof(CanDraw));
     }
 
     [RelayCommand]
     private void DecrementWinners()
     {
-        if (NumberOfWinners > 1)
-            NumberOfWinners--;
+        if (NumberOfWinners > 1) NumberOfWinners--;
         OnPropertyChanged(nameof(CanDraw));
     }
 
@@ -275,14 +254,14 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
         {
             await _raffle.ResetAsync();
             SessionWinners.Clear();
-            ShowResult      = false;
-            AnimatedName    = "---";
+            ShowResult = false;
+            AnimatedName = "---";
             NumberOfWinners = 1;
             await RefreshStateAsync();
         });
     }
 
-    // ─── Export ──────────────────────────────────────────────────────────────
+    // ─── Export ───────────────────────────────────────────────────────────────
 
     [RelayCommand]
     private async Task ExportWinnersAsync()
@@ -293,12 +272,10 @@ public sealed partial class RaffleViewModel : BaseViewModel, IDisposable
             await Share.RequestAsync(new ShareFileRequest
             {
                 Title = "Winners.xlsx",
-                File  = new ShareFile(path)
+                File = new ShareFile(path)
             });
         }, "Export failed");
     }
-
-    // ─── Navigate to winners ──────────────────────────────────────────────────
 
     [RelayCommand]
     private Task ViewWinnersAsync() => _nav.NavigateToWinnersAsync();

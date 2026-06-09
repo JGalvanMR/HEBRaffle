@@ -16,7 +16,7 @@ public sealed partial class DashboardViewModel : BaseViewModel
 
     public DashboardViewModel(IDatabaseService db, INavigationService nav)
     {
-        _db  = db;
+        _db = db;
         _nav = nav;
         Title = "HEB Raffle — Dashboard";
     }
@@ -31,8 +31,8 @@ public sealed partial class DashboardViewModel : BaseViewModel
     {
         await ExecuteSafeAsync(async () =>
         {
-            TotalParticipants  = await _db.GetParticipantCountAsync();
-            TotalWinners       = await _db.GetWinnerCountAsync();
+            TotalParticipants = await _db.GetParticipantCountAsync();
+            TotalWinners = await _db.GetWinnerCountAsync();
             EligibleParticipants = await _db.GetNonWinnerCountAsync();
 
             EventStatus = TotalWinners > 0
@@ -54,7 +54,7 @@ public sealed partial class DashboardViewModel : BaseViewModel
 
     [RelayCommand]
     private Task NavigateToWinnersAsync() => _nav.NavigateToWinnersAsync();
-	
-	[RelayCommand]
-	private Task NavigateToImportAsync() => _nav.NavigateToImportAsync();
+
+    [RelayCommand]
+    private Task NavigateToImportAsync() => _nav.NavigateToImportAsync();
 }

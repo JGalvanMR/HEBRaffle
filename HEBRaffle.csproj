@@ -1,41 +1,120 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0-android</TargetFramework>
+		<!-- ── Ambas plataformas ──────────────────────────────────────── -->
+		<TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>HEBRaffle</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+
+		<!-- ── Identidad de la aplicación ───────────────────────────── -->
 		<ApplicationTitle>HEB Raffle</ApplicationTitle>
 		<ApplicationId>com.mrlucky.hebraffle</ApplicationId>
 		<ApplicationVersion>1</ApplicationVersion>
 		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+
+		<!-- ── Build general ─────────────────────────────────────────── -->
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+		<!-- SixLabors.ImageSharp (dependencia de ClosedXML 0.102+) requiere código unsafe -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<!-- Forzar al compilador de Mac a ignorar la advertencia/error de Xcode -->
+		<MtouchNoWarn>$(MtouchNoWarn);BI1234</MtouchNoWarn>
+		<_CheckXcodeVersion>False</_CheckXcodeVersion>
+
+
 	</PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
-		<PackageReference Include="ClosedXML" Version="0.102.3" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
+	<!-- ═══════════════════════════════════════════════════════════════
+       iOS – Debug (Detección inteligente de Simulador vs Físico)
+     ════════════════════════════════════════════════════════════════════ -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Debug'">
+		<MtouchInterpreter>all</MtouchInterpreter>
+		<CodesignEntitlements>Platforms/iOS/Entitlements.plist</CodesignEntitlements>
+		<EnableCodeSigning>false</EnableCodeSigning>
+		<!-- Si el destino es un SIMULADOR: Apagar firmas por completo -->
+		<EnableCodeSigning Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64' Or '$(RuntimeIdentifier)' == 'iossimulator-arm64' Or '$(Platform)' == 'iPhoneSimulator'">false</EnableCodeSigning>
+		<CodesignKey Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64' Or '$(RuntimeIdentifier)' == 'iossimulator-arm64' Or '$(Platform)' == 'iPhoneSimulator'"></CodesignKey>
+		<CodesignProvision Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64' Or '$(RuntimeIdentifier)' == 'iossimulator-arm64' Or '$(Platform)' == 'iPhoneSimulator'"></CodesignProvision>
+
+		<!-- Si el destino es un DISPOSITIVO FÍSICO: Solicitar firma de desarrollo -->
+		<CodesignKey Condition="'$(RuntimeIdentifier)' == 'ios-arm64' and '$(Platform)' != 'iPhoneSimulator'">Apple Development</CodesignKey>
+	</PropertyGroup>
+	<!-- ═══════════════════════════════════════════════════════════════
+       iOS – Release (App Store / TestFlight / Enterprise)
+     ════════════════════════════════════════════════════════════════════ -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<CodesignKey>Apple Distribution</CodesignKey>
+		<CodesignEntitlements>Platforms/iOS/Entitlements.plist</CodesignEntitlements>
+		<!-- AOT completo: mejor startup time en dispositivo físico -->
+		<UseInterpreter>false</UseInterpreter>
+		<!-- TrimMode=partial: solo recorta assemblies SDK, preserva NuGet packages intactos -->
+		<!-- Crítico: ClosedXML y DocumentFormat.OpenXml usan reflection agresivo -->
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>partial</TrimMode>
+		<!-- GC incremental concurrente: animaciones más fluidas durante colecciones -->
+		<EnableSGenConc>true</EnableSGenConc>
+	</PropertyGroup>
+
+	<!-- ═══════════════════════════════════════════════════════════════
+       Android – Release (Optimización y tipo de salida)
+     ════════════════════════════════════════════════════════════════════ -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
+		<!-- Cambiar a 'apk' si quieres instalar directo. Usa 'aab' para Google Play -->
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+
+		<!-- Optimización de tamaño y rendimiento (AOT parcial para Android) -->
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>partial</TrimMode>
+		<RunAOTCompilation>true</RunAOTCompilation>
+	</PropertyGroup>
+
+
+	<!-- ═══════════════════════════════════════════════════════════════
+       Protección explícita del trimmer para librerías de reflection
+       (backup adicional al TrimMode=partial)
+     ════════════════════════════════════════════════════════════════════ -->
+	<ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
+		<TrimmerRootAssembly Include="ClosedXML" />
+		<TrimmerRootAssembly Include="DocumentFormat.OpenXml" />
+		<TrimmerRootAssembly Include="DocumentFormat.OpenXml.Framework" />
 	</ItemGroup>
 
+	<!-- ═══════════════════════════════════════════════════════════════
+       NuGet packages — todos compatibles con iOS / ARM64
+     ════════════════════════════════════════════════════════════════════ -->
 	<ItemGroup>
-		<MauiIcon Include="Resources\AppIcon\appicon.svg"
-				  ForegroundFile="Resources\AppIcon\appiconfg.svg"
+		<!-- CommunityToolkit.Maui 9.x: soporte iOS nativo -->
+		<PackageReference Include="CommunityToolkit.Maui"              Version="9.1.1"   />
+		<!-- MVVM Toolkit: netstandard2.0, multiplataforma total -->
+		<PackageReference Include="CommunityToolkit.Mvvm"              Version="8.3.2"   />
+		<!-- SQLite-net: soporte iOS y Android -->
+		<PackageReference Include="sqlite-net-pcl"                      Version="1.9.172" />
+		<!-- bundle_green incluye SQLite nativo precompilado para ios-arm64 -->
+		<PackageReference Include="SQLitePCLRaw.bundle_green"           Version="2.1.10"  />
+		<!-- ClosedXML 0.102+: usa SixLabors en lugar de System.Drawing.Common → iOS compatible -->
+		<PackageReference Include="ClosedXML"                          Version="0.102.3" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0"   />
+		<PackageReference Include="Microsoft.Maui.Controls"            Version="9.0.120" />
+	</ItemGroup>
+
+	<!-- ═══════════════════════════════════════════════════════════════
+       Recursos MAUI
+     ════════════════════════════════════════════════════════════════════ -->
+	<ItemGroup>
+		<MauiIcon Include="Resources\AppIcon\appicon.png"
 				  Color="#CC0000" />
-		<MauiSplashScreen Include="Resources\Splash\splash.svg"
+		<MauiSplashScreen Include="Resources\Splash\splash.png"
 						  Color="#CC0000"
 						  BaseSize="128,128" />
-		<MauiImage Include="Resources\Images\*" />
-		<MauiFont Include="Resources\Fonts\*" />
-		<MauiAsset Include="Resources\Raw\**"
-				   LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<MauiImage  Include="Resources\Images\*" />
+		<MauiFont   Include="Resources\Fonts\*"  />
+		<MauiAsset  Include="Resources\Raw\**"
+					LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
 </Project>
